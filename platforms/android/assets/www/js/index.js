@@ -40,6 +40,8 @@ var app = {
     receivedEvent: function(id) {
         var budimage = '../img/logo.png';
         var budsize = 1;
+        var budpressure = 200;
+        var budtemp = 80;
         var parentElement = document.getElementById(id);
         // var listeningElement = parentElement.querySelector('.listening');
         // var receivedElement = parentElement.querySelector('.received');
@@ -48,14 +50,26 @@ var app = {
         // Avoid async. This is important.
         $.ajaxSetup( { "async": false } );
         $.getJSON('http://server.alcoholanalytics.com/api/hackathon/?m=577&d=c&f=2&l=&s=&t=j', function(data) {
-            $.each(data, function(index) {
+            // Consider onl the latest reading.
+            // $.each(data, function(index) {
                 // alert(data[index].id);
                 // receivedElement.innerHTML = 'Welcome to SmartBar at '+ data[index].city + ', ' + data[index].state;
-                if (data[index].liquid_name) {
-                    budimage = '../img/' + data[index].liquid_name + '.png';
+                if (data[0].liquid_name) {
+                    budimage = '../img/' + data[0].liquid_name + '.png';
                  }
-                if (data[index].volume) {
-                    budsize = parseFloat(data[index].volume);
+                if (data[0].delta) {
+                    budsize = 1 * (1.0+parseFloat(data[0].delta));
+                 }
+                if (data[0].liquid_temp) {
+                    budtemp = -4 * parseInt(data[0].liquid_temp)
+                 }
+            // });
+        });
+
+        $.getJSON('http://server.alcoholanalytics.com/api/hackathon/?m=578&d=p&l=&s=&t=j',  function(data) {
+            $.each(data, function(index) {
+                if (data[index].value) {
+                    budpressure = parseInt(parseFloat(data[index].value) / 5.0);
                  }
             });
         });
@@ -63,8 +77,10 @@ var app = {
         console.log('Received Event: ' + id);
         var canvasElem = document.getElementById("game");
         var world = boxbox.createWorld(canvasElem);
-        alert('image='+budimage);
-        alert('budsize='+budsize);
+        alert('bud type='+budimage);
+        alert('bud size='+budsize);
+        alert('bud pressure='+budpressure);
+        alert('bud temp='+budtemp);
         world.createEntity({
             name: "player",
             shape: "circle",
@@ -77,7 +93,8 @@ var app = {
             x: 2,
             y: 10,
             onKeyDown: function(e) {
-                this.applyImpulse(200, 60);
+                // up, forward
+                this.applyImpulse(budpressure, budtemp);
             }
         });
 

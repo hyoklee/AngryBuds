@@ -1,3 +1,4 @@
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -39,6 +40,7 @@ var app = {
     // Update DOM on a Received Event
     receivedEvent: function(id) {
         var budimage = '../img/logo.png';
+        var targetimage = '../img/pig.jpg';
         var budsize = 1;
         var budpressure = 200;
         var budtemp = 80;
@@ -77,10 +79,10 @@ var app = {
         console.log('Received Event: ' + id);
         var canvasElem = document.getElementById("game");
         var world = boxbox.createWorld(canvasElem);
-        alert('bud type='+budimage);
-        alert('bud size='+budsize);
-        alert('bud pressure='+budpressure);
-        alert('bud temp='+budtemp);
+        // alert('bud type='+budimage);
+        // alert('bud size='+budsize);
+        // alert('bud pressure='+budpressure);
+        // alert('bud temp='+budtemp);
         world.createEntity({
             name: "player",
             shape: "circle",
@@ -112,7 +114,7 @@ var app = {
             name: "block",
             shape: "square",
             color: "brown",
-            width: .5,
+            width: 1,
             height: 4,
             onImpact: function(entity, force) {
                 if (entity.name() === "player") {
@@ -136,7 +138,18 @@ var app = {
             height: .5
         });
 
-
+        world.createEntity({
+            name: "target",
+            shape: "circle",
+            // radius: 1,
+            radius: budsize,
+            // radius: 2,
+            image: targetimage,
+            imageStretchToFit: true,
+            density: 4,
+            x: 16,
+            y: -1,
+        });
 
     }
 };
